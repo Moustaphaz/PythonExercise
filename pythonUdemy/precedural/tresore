@@ -1,0 +1,46 @@
+from collections import deque
+
+# Grille ASCII transformée en matrice (simplifiée)
+grille = [
+    [' ', '|', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', ' ', '|'],
+    ['_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
+    ['|', ' ', ' ', ' ', '-', '"', '_', ',', '=', '=', '_', '|', ' '],
+    ['|', '_', '_', '_', ' ', ' ', '_', ' ', '_', '|', '_', '_', '_'],
+    [' ', '|', ' ', ' ', ' ', ' ', '_', '_', '|', ' ', ' ', '|', 'T']  # T pour "trésor"
+]
+
+# Dimensions de la grille
+n, m = len(grille), len(grille[0])
+
+# Directions : gauche, droite, haut, bas
+directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+# Fonction pour vérifier si une cellule est valide
+def est_valide(x, y):
+    return 0 <= x < n and 0 <= y < m and grille[x][y] != '_' and grille[x][y] != '='
+
+# Fonction BFS pour trouver le trésor
+def trouver_tresor(depart):
+    file = deque([(*depart, 0)])  # file contenant la position et la distance
+    visite = set([depart])
+
+    while file:
+        x, y, distance = file.popleft()
+        
+        # Si on trouve le trésor, on renvoie la distance
+        if grille[x][y] == 'T':
+            return distance
+        
+        # Explorer les 4 directions possibles
+        for direction in directions:
+            nx, ny = x + direction[0], y + direction[1]
+            if est_valide(nx, ny) and (nx, ny) not in visite:
+                visite.add((nx, ny))
+                file.append((nx, ny, distance + 1))
+    
+    return -1  # Si aucun trésor n'est trouvé
+
+# Appel de la fonction depuis le point de départ (0, 0)
+depart = (0, 0)
+distance = trouver_tresor(depart)
+print(f"Distance jusqu'au trésor : {distance}")
